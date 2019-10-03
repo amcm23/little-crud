@@ -1,24 +1,24 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {TabView,TabPanel} from 'primereact/tabview';
+import Users from './views/users'
+import Products from './views/products'
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Software de Gestión: </h1>
+      <TabView>
+      <TabPanel responsive header="Clientes">
+          <Users />
+        </TabPanel>
+        <TabPanel responsive={true} header="Facturas">
+        Facturas
+        </TabPanel>
+        <TabPanel header="Productos">
+        <Products />
+        </TabPanel>
+      </TabView>
     </div>
   );
 }
