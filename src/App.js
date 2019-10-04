@@ -1,8 +1,9 @@
 import React from 'react';
 import './App.css';
 import {TabView,TabPanel} from 'primereact/tabview';
-import Users from './views/users'
+import Clients from './views/clients'
 import Products from './views/products'
+import Facturas from './views/facturas'
 
 function App() {
   return (
@@ -10,10 +11,10 @@ function App() {
       <h1>Software de Gestión: </h1>
       <TabView>
       <TabPanel responsive header="Clientes">
-          <Users />
+          <Clients />
         </TabPanel>
         <TabPanel responsive={true} header="Facturas">
-        Facturas
+        <Facturas/>
         </TabPanel>
         <TabPanel header="Productos">
         <Products />
