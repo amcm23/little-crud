@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
@@ -7,7 +7,24 @@ import Axios from "axios";
 import { baseUrl } from "../../constants/index";
 import moment from "moment";
 
-export default function AddDialog(props) {
+export default function EditDialog(props) {
+  const { data } = props;
+
+  useEffect(() => {
+    //COMO EL SET STATE DEL COMPONENTE PADRE ES UNA FUNCIÓN ASÍNCRONA, TENGO QUE HACER UN USE EFFECT
+    // QUE DETECTE CUANDO CAMBIA LA PROP DATA Y ASÍ COLOCAR POR DEFECTO LOS DATOS A EDITAR EN EL FORMULARIO
+    data && console.log("data pro props: ", data.id);
+    data && setId(data.id);
+    data && setName(data.nombre);
+    data && setSurname(data.apellido);
+    data && setDni(data.dni);
+    data && setBirthDate(data.fecha_nacimiento);
+    data && setAddress(data.direccion);
+    data && setTlf(data.telefono);
+    data && setEmail(data.email);
+  }, [data]);
+
+  const [id, setId] = useState();
   const [name, setName] = useState();
   const [surname, setSurname] = useState();
   const [dni, setDni] = useState();
@@ -29,10 +46,11 @@ export default function AddDialog(props) {
 
     console.log("VALORES SUBMIT", values);
 
-    Axios.post(`${baseUrl}/clientes`, values)
+    Axios.put(`${baseUrl}/clientes/${id}`, values)
       .then(response => {
         console.log(response.data);
         props.hideDialog();
+        setId();
         setName("");
         setSurname("");
         setDni("");
@@ -123,7 +141,7 @@ export default function AddDialog(props) {
 
         <div className="p-col-12 p-md-4" style={{ marginBottom: "1rem" }}>
           <div className="p-inputgroup">
-            <Button label="Añadir" onClick={submit} />
+            <Button label="Confirmar" onClick={submit} />
           </div>
         </div>
       </div>

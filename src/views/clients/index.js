@@ -3,9 +3,10 @@ import { DataTable, Column } from "primereact/datatable";
 import axios from "axios";
 import { baseUrl } from "../../constants/index";
 import { Button } from "primereact/button";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaTrash, FaPen } from "react-icons/fa";
 import { Dialog } from "primereact/dialog";
 import AddDialog from "./addDialog";
+import EditDialog from "./editDialog";
 
 function Clients() {
   function fetchClients() {
@@ -23,17 +24,70 @@ function Clients() {
     fetchClients();
   }, []);
 
+  function handleDelete(id) {
+    axios
+      .delete(`${baseUrl}/clientes/${id}`)
+      .then(response => {
+        console.log(response.data);
+        alert("eliminado con éxito");
+        fetchClients();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   //Constante clientes la cual guarda un array que contendrá todos los clientes de la base de datos.
   const [clients, setClients] = useState([]);
-  const [addDialog, setAddDialog] = useState(true); //change to false
+  const [addDialog, setAddDialog] = useState(false);
+  const [editDialog, setEditDialog] = useState(false);
+  const [dataToEdit, setDataToEdit] = useState(null);
+  const [selectedClient, setSelectedClient] = useState([]);
 
   function showAddDialog() {
     setAddDialog(true);
   }
 
+  useEffect(() => {
+    {
+      dataToEdit !== null && setEditDialog(true);
+      console.log("data to edit: ", dataToEdit);
+    }
+  }, [dataToEdit]);
+
   function hideAddDialog() {
     setAddDialog(false);
     fetchClients();
+  }
+
+  function showEdit(client) {
+    console.log(client);
+    setDataToEdit(client);
+  }
+
+  function hideEditDialog() {
+    setEditDialog(false);
+    fetchClients();
+  }
+
+  function optionsFormatter(rowData, column) {
+    //este formateador lo que hace es pintar botones en vez de datos
+    //en la tupla de cada cliente y trae en rowData el objeto cliente
+    return (
+      <div>
+        <Button
+          type="button"
+          className="p-button-danger"
+          label={<FaTrash />}
+          onClick={() => handleDelete(rowData.id)}
+        />
+        <Button
+          type="button"
+          label={<FaPen />}
+          onClick={() => showEdit(rowData)}
+        />
+      </div>
+    );
   }
 
   return (
@@ -46,9 +100,21 @@ function Clients() {
             style={{ marginBottom: "1rem" }}
             label={<FaPlusCircle size={20} />}
           />
+          {selectedClient.length > 0
+            ? "Ha seleccionado: " + selectedClient.length
+            : null}
         </div>
       </div>
-      <DataTable responsive={true} value={clients}>
+      <DataTable
+        responsive={true}
+        value={clients}
+        //selectionMode="multiple"
+        //selection={selectedClient}
+        //onSelectionChange={e =>
+        //  setSelectedClient(selectedClient.concat(e.value))
+        //}
+        responsive={true}
+        columnResizeMode="fit">
         <Column field="id" header="ID" />
         <Column field="dni" header="DNI" />
         <Column field="nombre" header="Nombre" />
@@ -57,6 +123,7 @@ function Clients() {
         <Column field="fecha_nacimiento" header="Fecha Nac." />
         <Column field="telefono" header="Teléfono" />
         <Column field="email" header="Email" />
+        <Column field="options" header="Opciones" body={optionsFormatter} />
       </DataTable>
       <Dialog
         header="Añadir Cliente"
@@ -66,6 +133,16 @@ function Clients() {
         modal={true}
         onHide={() => setAddDialog(false)}>
         <AddDialog hideDialog={hideAddDialog} />
+      </Dialog>
+
+      <Dialog
+        header="Editar Cliente"
+        visible={editDialog}
+        width="500px"
+        maximizable={true}
+        modal={true}
+        onHide={() => setEditDialog(false)}>
+        <EditDialog hideDialog={hideEditDialog} data={dataToEdit} />
       </Dialog>
     </div>
   );

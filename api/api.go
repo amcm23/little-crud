@@ -48,9 +48,9 @@ type Producto struct {
 }
 
 type Categoria struct {
-	ID        uint64  `json:"id"`
-	Nombre    string  `json:"nombre"`
-	Descuento float32 `json:"impuesto"`
+	ID       uint64  `json:"id"`
+	Nombre   string  `json:"nombre"`
+	Impuesto float32 `json:"impuesto"`
 }
 
 var db *sql.DB
@@ -111,16 +111,22 @@ func main() {
 	r.Put("/facturas/{id}", updateFactura)
 
 	r.Get("/detalles", getDetalles)
+	r.Get("/detalles/{id}", getDetalle)
 	r.Delete("/detalles/{id}", deleteDetalle)
 	r.Post("/detalles", createDetalle)
+	r.Put("/detalles/{id}", updateDetalle)
 
 	r.Get("/productos", getProductos)
+	r.Get("/productos/{id}", getProducto)
 	r.Delete("/productos/{id}", deleteProducto)
 	r.Post("/productos", createProducto)
+	r.Put("/productos/{id}", updateProducto)
 
-	r.Get("/categorias", getCategoria)
+	r.Get("/categorias", getCategorias)
+	r.Get("/categorias/{id}", getCategoria)
 	r.Delete("/categorias/{id}", deleteCategoria)
 	r.Post("/categorias", createCategoria)
+	r.Put("/categorias/{id}", updateCategoria)
 
 	http.ListenAndServe(":8000", r)
 }
@@ -142,7 +148,7 @@ func deleteCliente(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Cliente with ID = %s was deleted", params["id"])*/
 	id := chi.URLParam(r, "id")
 
-	query, err := db.Prepare("delete from clientes where id_cliente=?")
+	query, err := db.Prepare("delete from clientes where id=?")
 	catch(err)
 	_, er := query.Exec(id)
 	catch(er)
@@ -181,7 +187,7 @@ func createCliente(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	//w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
-	stmt, err := db.Prepare("INSERT INTO clientes(nombre,apellido,direccion,fecha_nacimiento,telefono,email) VALUES(?,?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO clientes(dni,nombre,apellido,direccion,fecha_nacimiento,telefono,email) VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -371,6 +377,24 @@ func getDetalles(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(detalles)
 }
 
+func getDetalle(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Set("Content-Type", "application/json")
+	id := chi.URLParam(r, "id")
+	result, err := db.Query("SELECT * FROM detalles WHERE num_detalle = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer result.Close()
+	var detalle Detalle
+	for result.Next() {
+		err := result.Scan(&detalle.ID, &detalle.Factura, &detalle.Producto, &detalle.Cantidad, &detalle.Precio, &detalle.Descuento, &detalle.Impuesto)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+	json.NewEncoder(w).Encode(detalle)
+}
+
 func createDetalle(w http.ResponseWriter, r *http.Request) {
 	stmt, err := db.Prepare("INSERT INTO detalles(id_factura,id_producto,cantidad,precio, descuento, impuesto) VALUES(?,?,?,?,?,?)")
 	if err != nil {
@@ -394,6 +418,31 @@ func createDetalle(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 	fmt.Fprintf(w, "New post was created")
+}
+
+func updateDetalle(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	stmt, err := db.Prepare("UPDATE detalles SET id_factura = ?,id_producto = ?, cantidad = ?,precio= ?,descuento = ?,impuesto = ? WHERE num_detalle = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal)
+	id_factura := keyVal["id_factura"]
+	id_producto := keyVal["id_producto"]
+	cantidad := keyVal["cantidad"]
+	precio := keyVal["precio"]
+	descuento := keyVal["descuento"]
+	impuesto := keyVal["impuesto"]
+	_, err = stmt.Exec(id_factura, id_producto, cantidad, precio, descuento, impuesto)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Fprintf(w, "Detalle actualizado")
 }
 
 func deleteProducto(w http.ResponseWriter, r *http.Request) {
@@ -427,6 +476,24 @@ func getProductos(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(productos)
 }
 
+func getProducto(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Set("Content-Type", "application/json")
+	id := chi.URLParam(r, "id")
+	result, err := db.Query("SELECT * FROM productos WHERE id = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer result.Close()
+	var producto Producto
+	for result.Next() {
+		err := result.Scan(&producto.ID, &producto.Nombre, &producto.Precio, &producto.Stock, &producto.Categoria)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+	json.NewEncoder(w).Encode(producto)
+}
+
 func createProducto(w http.ResponseWriter, r *http.Request) {
 	stmt, err := db.Prepare("INSERT INTO productos(nombre,precio,stock,categoria) VALUES(?,?,?,?)")
 	if err != nil {
@@ -450,6 +517,29 @@ func createProducto(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "New post was created")
 }
 
+func updateProducto(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	stmt, err := db.Prepare("UPDATE productos SET nombre = ?, precio= ?, stock=?, categoria=?  WHERE id = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal)
+	nombre := keyVal["nombre"]
+	precio := keyVal["precio"]
+	stock := keyVal["stock"]
+	categoria := keyVal["categoria"]
+	_, err = stmt.Exec(nombre, precio, stock, categoria)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Fprintf(w, "Producto actualizado")
+}
+
 func deleteCategoria(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
@@ -460,7 +550,7 @@ func deleteCategoria(w http.ResponseWriter, r *http.Request) {
 	query.Close()
 }
 
-func getCategoria(w http.ResponseWriter, r *http.Request) {
+func getCategorias(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
@@ -472,13 +562,31 @@ func getCategoria(w http.ResponseWriter, r *http.Request) {
 	defer result.Close()
 	for result.Next() {
 		var categoria Categoria
-		err := result.Scan(&categoria.ID, &categoria.Nombre, &categoria.Descuento)
+		err := result.Scan(&categoria.ID, &categoria.Nombre, &categoria.Impuesto)
 		if err != nil {
 			panic(err.Error())
 		}
 		categorias = append(categorias, categoria)
 	}
 	json.NewEncoder(w).Encode(categorias)
+}
+
+func getCategoria(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Set("Content-Type", "application/json")
+	id := chi.URLParam(r, "id")
+	result, err := db.Query("SELECT * FROM categorias WHERE codigo = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer result.Close()
+	var categoria Categoria
+	for result.Next() {
+		err := result.Scan(&categoria.ID, &categoria.Nombre, &categoria.Impuesto)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+	json.NewEncoder(w).Encode(categoria)
 }
 
 func createCategoria(w http.ResponseWriter, r *http.Request) {
@@ -500,4 +608,25 @@ func createCategoria(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 	fmt.Fprintf(w, "New post was created")
+}
+
+func updateCategoria(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	stmt, err := db.Prepare("UPDATE categorias SET nombre = ?, impuesto= ? WHERE codigo = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal)
+	nombre := keyVal["nombre"]
+	impuesto := keyVal["impuesto"]
+	_, err = stmt.Exec(nombre, impuesto)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Fprintf(w, "Categoria actualizada")
 }
