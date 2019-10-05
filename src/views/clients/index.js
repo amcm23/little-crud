@@ -77,14 +77,14 @@ function Clients() {
       <div>
         <Button
           type="button"
-          className="p-button-danger"
-          label={<FaTrash />}
-          onClick={() => handleDelete(rowData.id)}
+          label={<FaPen />}
+          onClick={() => showEdit(rowData)}
         />
         <Button
           type="button"
-          label={<FaPen />}
-          onClick={() => showEdit(rowData)}
+          className="p-button-danger"
+          label={<FaTrash />}
+          onClick={() => handleDelete(rowData.id)}
         />
       </div>
     );
