@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import {TabView,TabPanel} from 'primereact/tabview';
+import {Button} from 'primereact/button'
 import Clients from './views/clients'
 import Products from './views/products'
 import Facturas from './views/facturas'

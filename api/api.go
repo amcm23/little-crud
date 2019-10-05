@@ -102,10 +102,13 @@ func main() {
 	r.Get("/clientes/{id}", getCliente)
 	r.Delete("/clientes/{id}", deleteCliente)
 	r.Post("/clientes", createCliente)
+	r.Put("/clientes/{id}", updateCliente)
 
 	r.Get("/facturas", getFacturas)
+	r.Get("/facturas/{id}", getFactura)
 	r.Delete("/facturas/{id:[0-9]+}", deleteFactura)
 	r.Post("/facturas", createFactura)
+	r.Put("/facturas/{id}", updateFactura)
 
 	r.Get("/detalles", getDetalles)
 	r.Delete("/detalles/{id}", deleteDetalle)
@@ -173,29 +176,6 @@ func getClientes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(clientes)
 }
 
-/*func setupResponse(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-}*/
-/*func Insert(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "POST" {
-		name := r.FormValue("nombre")
-		city := r.FormValue("apellido")
-		insForm, err := db.Prepare("INSERT INTO clientes(nombre, apellido) VALUES(?,?)")
-		if err != nil {
-			panic(err.Error())
-		}
-		insForm.Exec(name, city)
-		log.Println("INSERT: Name: " + name + " | City: " + city)
-	}
-
-}*/
-
 func createCliente(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Set("Access-Control-Allow-Origin", "*")
 	//w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
@@ -243,9 +223,9 @@ func getCliente(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(cliente)
 }
 
-/*func updatePost(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	stmt, err := db.Prepare("UPDATE clientes SET nombre = ? WHERE id = ?")
+func updateCliente(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	stmt, err := db.Prepare("UPDATE clientes SET dni= ?, nombre = ?, apellido= ?, direccion=?,fecha_nacimiento=?,telefono=?,email=?  WHERE id = " + id)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -255,13 +235,19 @@ func getCliente(w http.ResponseWriter, r *http.Request) {
 	}
 	keyVal := make(map[string]string)
 	json.Unmarshal(body, &keyVal)
-	newTitle := keyVal["nombre"]
-	_, err = stmt.Exec(newTitle, params["id"])
+	dni := keyVal["dni"]
+	nombre := keyVal["nombre"]
+	apellido := keyVal["apellido"]
+	direccion := keyVal["direccion"]
+	fecha_nacimiento := keyVal["fecha_nacimiento"]
+	telefono := keyVal["telefono"]
+	email := keyVal["email"]
+	_, err = stmt.Exec(dni, nombre, apellido, direccion, fecha_nacimiento, telefono, email)
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Fprintf(w, "Cliente with ID = %s was updated", params["id"])
-}*/
+	fmt.Fprintf(w, "Cliente actualizado")
+}
 
 func deleteFactura(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "num_factura")
@@ -294,6 +280,24 @@ func getFacturas(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(facturas)
 }
 
+func getFactura(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Set("Content-Type", "application/json")
+	id := chi.URLParam(r, "id")
+	result, err := db.Query("SELECT * FROM facturas WHERE id = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer result.Close()
+	var factura Factura
+	for result.Next() {
+		err := result.Scan(&factura.ID, &factura.Cliente, &factura.Fecha)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+	json.NewEncoder(w).Encode(factura)
+}
+
 func createFactura(w http.ResponseWriter, r *http.Request) {
 	stmt, err := db.Prepare("INSERT INTO facturas(id_cliente,fecha) VALUES(?,?)")
 	if err != nil {
@@ -313,6 +317,27 @@ func createFactura(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 	fmt.Fprintf(w, "New post was created")
+}
+
+func updateFactura(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	stmt, err := db.Prepare("UPDATE facturas SET id_cliente = ?, fecha= ?  WHERE id = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal)
+	id_cliente := keyVal["id_cliente"]
+	fecha := keyVal["fecha"]
+	_, err = stmt.Exec(id_cliente, fecha)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Fprintf(w, "Factura actualizado")
 }
 
 func deleteDetalle(w http.ResponseWriter, r *http.Request) {
