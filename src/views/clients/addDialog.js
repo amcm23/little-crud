@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
-import { es } from "./spanish";
+import { es } from "../../constants/spanish";
 import Axios from "axios";
 import { baseUrl } from "../../constants/index";
 import moment from "moment";

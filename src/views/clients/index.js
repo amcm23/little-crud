@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { DataTable, Column } from "primereact/datatable";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 import axios from "axios";
 import { baseUrl } from "../../constants/index";
 import { Button } from "primereact/button";
@@ -114,15 +115,64 @@ function Clients() {
         //  setSelectedClient(selectedClient.concat(e.value))
         //}
         responsive={true}
+        resizableColumns={true}
         columnResizeMode="fit">
-        <Column field="id" header="ID" />
-        <Column field="dni" header="DNI" />
-        <Column field="nombre" header="Nombre" />
-        <Column field="apellido" header="Apellidos" />
-        <Column field="direccion" header="Dirección" />
-        <Column field="fecha_nacimiento" header="Fecha Nac." />
-        <Column field="telefono" header="Teléfono" />
-        <Column field="email" header="Email" />
+        <Column
+          field="id"
+          header="ID"
+          filter={true}
+          style={{ width: "5%", overflowX: "auto" }}
+          sortable={true}
+        />
+        <Column
+          field="dni"
+          header="DNI"
+          filter={true}
+          sortable={true}
+          style={{ width: "10%", overflowX: "auto" }}
+        />
+        <Column
+          field="nombre"
+          header="Nombre"
+          filter={true}
+          sortable={true}
+          style={{ width: "10%", overflowX: "auto" }}
+        />
+        <Column
+          field="apellido"
+          header="Apellidos"
+          filter={true}
+          sortable={true}
+          style={{ overflowX: "auto", width: "15%" }}
+        />
+        <Column
+          field="direccion"
+          header="Dirección"
+          filter={true}
+          sortable={true}
+          style={{ width: "15%", overflowX: "auto" }}
+        />
+        <Column
+          field="fecha_nacimiento"
+          header="Fecha Nac."
+          filter={true}
+          sortable={true}
+          style={{ width: "10%", overflowX: "auto" }}
+        />
+        <Column
+          field="telefono"
+          header="Teléfono"
+          filter={true}
+          sortable={true}
+          style={{ overflowX: "auto", width: "8%" }}
+        />
+        <Column
+          field="email"
+          header="Email"
+          filter={true}
+          sortable={true}
+          style={{ overflowX: "auto", width: "15%" }}
+        />
         <Column field="options" header="Opciones" body={optionsFormatter} />
       </DataTable>
       <Dialog
