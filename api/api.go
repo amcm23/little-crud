@@ -102,6 +102,7 @@ func main() {
 	r.Get("/clientes/{id}", getCliente)
 	r.Delete("/clientes/{id}", deleteCliente)
 	r.Post("/clientes", createCliente)
+	r.Put("/clientes/{id}", updateCliente)
 
 	r.Get("/facturas", getFacturas)
 	r.Delete("/facturas/{id:[0-9]+}", deleteFactura)
@@ -243,9 +244,9 @@ func getCliente(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(cliente)
 }
 
-/*func updatePost(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	stmt, err := db.Prepare("UPDATE clientes SET nombre = ? WHERE id = ?")
+func updateCliente(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	stmt, err := db.Prepare("UPDATE clientes SET dni= ?, nombre = ?, apellido= ?, direccion=?,fecha_nacimiento=?,telefono=?,email=?  WHERE id = " + id)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -255,13 +256,19 @@ func getCliente(w http.ResponseWriter, r *http.Request) {
 	}
 	keyVal := make(map[string]string)
 	json.Unmarshal(body, &keyVal)
-	newTitle := keyVal["nombre"]
-	_, err = stmt.Exec(newTitle, params["id"])
+	dni := keyVal["dni"]
+	nombre := keyVal["nombre"]
+	apellido := keyVal["apellido"]
+	direccion := keyVal["direccion"]
+	fecha_nacimiento := keyVal["fecha_nacimiento"]
+	telefono := keyVal["telefono"]
+	email := keyVal["email"]
+	_, err = stmt.Exec(dni, nombre, apellido, direccion, fecha_nacimiento, telefono, email)
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Fprintf(w, "Cliente with ID = %s was updated", params["id"])
-}*/
+	fmt.Fprintf(w, "Cliente actualizado")
+}
 
 func deleteFactura(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "num_factura")
