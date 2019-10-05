@@ -187,7 +187,7 @@ func createCliente(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	//w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
-	stmt, err := db.Prepare("INSERT INTO clientes(nombre,apellido,direccion,fecha_nacimiento,telefono,email) VALUES(?,?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO clientes(dni,nombre,apellido,direccion,fecha_nacimiento,telefono,email) VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
 		panic(err.Error())
 	}
