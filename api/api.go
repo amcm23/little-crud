@@ -111,8 +111,10 @@ func main() {
 	r.Put("/facturas/{id}", updateFactura)
 
 	r.Get("/detalles", getDetalles)
+	r.Get("/detalles/{id}", getDetalle)
 	r.Delete("/detalles/{id}", deleteDetalle)
 	r.Post("/detalles", createDetalle)
+	r.Put("/detalles/{id}", updateDetalle)
 
 	r.Get("/productos", getProductos)
 	r.Get("/productos/{id}", getProducto)
@@ -375,6 +377,24 @@ func getDetalles(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(detalles)
 }
 
+func getDetalle(w http.ResponseWriter, r *http.Request) {
+	//w.Header().Set("Content-Type", "application/json")
+	id := chi.URLParam(r, "id")
+	result, err := db.Query("SELECT * FROM detalles WHERE num_detalle = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer result.Close()
+	var detalle Detalle
+	for result.Next() {
+		err := result.Scan(&detalle.ID, &detalle.Factura, &detalle.Producto, &detalle.Cantidad, &detalle.Precio, &detalle.Descuento, &detalle.Impuesto)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+	json.NewEncoder(w).Encode(detalle)
+}
+
 func createDetalle(w http.ResponseWriter, r *http.Request) {
 	stmt, err := db.Prepare("INSERT INTO detalles(id_factura,id_producto,cantidad,precio, descuento, impuesto) VALUES(?,?,?,?,?,?)")
 	if err != nil {
@@ -398,6 +418,31 @@ func createDetalle(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 	fmt.Fprintf(w, "New post was created")
+}
+
+func updateDetalle(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	stmt, err := db.Prepare("UPDATE detalles SET id_factura = ?,id_producto = ?, cantidad = ?,precio= ?,descuento = ?,impuesto = ? WHERE num_detalle = " + id)
+	if err != nil {
+		panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal)
+	id_factura := keyVal["id_factura"]
+	id_producto := keyVal["id_producto"]
+	cantidad := keyVal["cantidad"]
+	precio := keyVal["precio"]
+	descuento := keyVal["descuento"]
+	impuesto := keyVal["impuesto"]
+	_, err = stmt.Exec(id_factura, id_producto, cantidad, precio, descuento, impuesto)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Fprintf(w, "Detalle actualizado")
 }
 
 func deleteProducto(w http.ResponseWriter, r *http.Request) {
