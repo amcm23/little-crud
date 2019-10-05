@@ -5,6 +5,8 @@ import { Button } from "primereact/button";
 import { es } from "../../constants/spanish";
 import Axios from "axios";
 import { baseUrl } from "../../constants/index";
+import { categories } from "../../constants/options";
+import { Dropdown } from "primereact/dropdown";
 import moment from "moment";
 
 export default function EditDialog(props) {
@@ -14,11 +16,11 @@ export default function EditDialog(props) {
     //COMO EL SET STATE DEL COMPONENTE PADRE ES UNA FUNCIÓN ASÍNCRONA, TENGO QUE HACER UN USE EFFECT
     // QUE DETECTE CUANDO CAMBIA LA PROP DATA Y ASÍ COLOCAR POR DEFECTO LOS DATOS A EDITAR EN EL FORMULARIO
     data && console.log("data pro props: ", data.id);
-    data && setId(data.id);
-    data && setName(data.nombre);
-    data && setPrice(data.precio);
-    data && setStock(data.stock);
-    data && setCategory(data.categoria);
+    data && setId(data.id.toString());
+    data && setName(data.nombre.toString());
+    data && setPrice(data.precio.toString());
+    data && setStock(data.stock.toString());
+    data && setCategory(data.categoria.toString());
   }, [data]);
 
   const [id, setId] = useState();
@@ -86,10 +88,11 @@ export default function EditDialog(props) {
 
       <div className="p-col-12 p-md-4" style={{ marginBottom: "1rem" }}>
         <div className="p-inputgroup">
-          <InputText
-            placeholder="Categoría"
+          <Dropdown
             value={category}
+            options={categories}
             onChange={e => setCategory(e.target.value)}
+            placeholder="Selecciona una categoría"
           />
         </div>
 

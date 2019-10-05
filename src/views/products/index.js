@@ -8,6 +8,7 @@ import { FaPlusCircle, FaTrash, FaPen } from "react-icons/fa";
 import { Dialog } from "primereact/dialog";
 import AddDialog from "./addDialog";
 import EditDialog from "./editDialog";
+import { transformCategory } from "../../constants/options";
 
 function Products() {
   function fetchProducts() {
@@ -91,6 +92,12 @@ function Products() {
     );
   }
 
+  function categoryFormatter(rowData) {
+    //este formateador lo que hace es pintar botones en vez de datos
+    //en la tupla de cada producto y trae en rowData el objeto producto
+    return transformCategory(rowData.categoria);
+  }
+
   return (
     <div>
       <div className="p-grid  p-justify-end">
@@ -151,6 +158,7 @@ function Products() {
           filter={true}
           style={{ overflowX: "auto" }}
           sortable={true}
+          body={categoryFormatter}
         />
         <Column field="options" header="Opciones" body={optionsFormatter} />
       </DataTable>
