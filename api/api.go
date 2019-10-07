@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi"
 	_ "github.com/go-sql-driver/mysql"
@@ -28,6 +28,13 @@ type Factura struct {
 	ID      uint64 `json:"id"`
 	Cliente string `json:"id_cliente"`
 	Fecha   string `json:"fecha"`
+	Detalle []struct {
+		Producto  uint64  `json:"id_producto"`
+		Cantidad  int     `json:"cantidad"`
+		Precio    float32 `json:"precio"`
+		Descuento float32 `json:"descuento"`
+		Impuesto  float32 `json:"impuesto"`
+	} `json:"detalles"`
 }
 
 type Detalle struct {
@@ -271,7 +278,7 @@ func getFacturas(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	var facturas []Factura
-	result, err := db.Query("SELECT * from facturas")
+	result, err := db.Query("SELECT f.id, CONCAT(c.id,' - ',c.nombre,' ',c.apellido) as id_cliente, f.fecha FROM clientes c JOIN facturas f ON f.id_cliente=c.id")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -290,7 +297,7 @@ func getFacturas(w http.ResponseWriter, r *http.Request) {
 func getFactura(w http.ResponseWriter, r *http.Request) {
 	//w.Header().Set("Content-Type", "application/json")
 	id := chi.URLParam(r, "id")
-	result, err := db.Query("SELECT * FROM facturas WHERE id = " + id)
+	result, err := db.Query("SELECT f.id, CONCAT(c.id,' - ',c.nombre,' ',c.apellido) as id_cliente, f.fecha FROM clientes c JOIN facturas f ON f.id_cliente=c.id WHERE f.id = " + id)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -306,6 +313,70 @@ func getFactura(w http.ResponseWriter, r *http.Request) {
 }
 
 func createFactura(w http.ResponseWriter, r *http.Request) {
+	stmt, err := db.Prepare("INSERT INTO facturas(id_cliente,fecha) VALUES(?,?)")
+	stmt2, err := db.Prepare("INSERT INTO detalles(id_factura,id_producto, cantidad,precio,descuento,impuesto) VALUES(?,?,?,?,?,?)")
+	if err != nil {
+		panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+	//keyVal := make(map[string]string)
+	var factura Factura
+	json.Unmarshal(body, &factura)
+	//num_factura := keyVal["num_factura"]
+	/*id_cliente := keyVal["id_cliente"]
+	fecha := keyVal["fecha"]
+	detalles := keyVal["detalles"]*/
+	//_, err = stmt.Exec(factura.Cliente, factura.Fecha)
+	res, err := stmt.Exec(factura.Cliente, factura.Fecha)
+	if err != nil {
+		panic(err.Error())
+	}
+	id, err := res.LastInsertId()
+
+	for i, _ := range factura.Detalle {
+		_, err = stmt2.Exec(id, factura.Detalle[i].Producto, factura.Detalle[i].Cantidad, factura.Detalle[i].Precio, factura.Detalle[i].Descuento, factura.Detalle[i].Impuesto)
+	}
+	log.Println(factura)
+	//fmt.Println(factura.Detalle.Cantidad)
+	//fmt.Fprintf(w, `new post was created `+factura)
+	//fmt.Fprintf(w, detalles)
+}
+
+/*func createFactura(w http.ResponseWriter, r *http.Request) {
+stmt, err := db.Prepare("INSERT INTO facturas(id_cliente,fecha) VALUES(?,?)")
+stmt2, err := db.Prepare("INSERT INTO detalles(id_factura,id_producto, cantidad,precio,descuento,impuesto) VALUES(?,?,?,?,?,?)")
+if err != nil {
+	panic(err.Error())
+}
+body, err := ioutil.ReadAll(r.Body)
+if err != nil {
+	panic(err.Error())
+}
+//keyVal := make(map[string]string)
+var factura Factura
+json.Unmarshal(body, &factura)
+//num_factura := keyVal["num_factura"]
+/*id_cliente := keyVal["id_cliente"]
+fecha := keyVal["fecha"]
+detalles := keyVal["detalles"]*/
+//_, err = stmt.Exec(factura.Cliente, factura.Fecha)
+/*res, err := stmt.Exec(factura.Cliente, factura.Fecha)
+	if err != nil {
+		panic(err.Error())
+	}
+	id, err := res.LastInsertId()
+
+	_, err = stmt2.Exec(id, factura.Detalle.Producto, factura.Detalle.Cantidad, factura.Detalle.Precio, factura.Detalle.Descuento, factura.Detalle.Impuesto)
+	log.Println(factura)
+	fmt.Println(factura.Detalle.Cantidad)
+	//fmt.Fprintf(w, `new post was created `+factura)
+	//fmt.Fprintf(w, detalles)
+}*/
+
+/*func createFactura(w http.ResponseWriter, r *http.Request) {
 	stmt, err := db.Prepare("INSERT INTO facturas(id_cliente,fecha) VALUES(?,?)")
 	if err != nil {
 		panic(err.Error())
@@ -328,7 +399,7 @@ func createFactura(w http.ResponseWriter, r *http.Request) {
 	idStr := strconv.FormatInt(id, 10)
 
 	fmt.Fprintf(w, `new post was created`+idStr)
-}
+}*/
 
 func updateFactura(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
