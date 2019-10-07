@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import axios from "axios";
 import { baseUrl } from "../../constants/index";
 import { Button } from "primereact/button";
-import { FaPlusCircle, FaTrash, FaPen, FaListAlt } from "react-icons/fa";
+import { FaPlusCircle, FaTrash, FaPen } from "react-icons/fa";
 import { Dialog } from "primereact/dialog";
 import AddDialog from "./addDialog";
 import EditDialog from "./editDialog";
@@ -41,7 +41,7 @@ function Bills() {
 
   //Constante billos la cual guarda un array que contendrá todos los billos de la base de datos.
   const [bills, setBills] = useState([]);
-  const [addDialog, setAddDialog] = useState(true);
+  const [addDialog, setAddDialog] = useState(false);
   const [editDialog, setEditDialog] = useState(false);
   const [dataToEdit, setDataToEdit] = useState(null);
   const [selectedBill, setSelectedBill] = useState([]);
@@ -78,21 +78,11 @@ function Bills() {
     return (
       <div>
         <Button
-          style={{ margin: "0.5rem" }}
-          tooltip="Detalles"
-          tooltipOptions={{ position: "top" }}
-          type="button"
-          label={<FaListAlt />}
-          onClick={() => showEdit(rowData)}
-        />
-        <Button
-          style={{ margin: "0.5rem" }}
           type="button"
           label={<FaPen />}
           onClick={() => showEdit(rowData)}
         />
         <Button
-          style={{ margin: "0.5rem" }}
           type="button"
           className="p-button-danger"
           label={<FaTrash />}
@@ -124,6 +114,7 @@ function Bills() {
         </div>
       </div>
       <DataTable
+        responsive={true}
         value={bills}
         //selectionMode="multiple"
         //selection={selectedBill}
@@ -141,7 +132,7 @@ function Bills() {
           sortable={true}
         />
         <Column
-          field="id_cliente"
+          field="cliente"
           header="Cliente"
           filter={true}
           style={{ overflowX: "auto" }}
@@ -158,7 +149,7 @@ function Bills() {
         <Column field="options" header="Opciones" body={optionsFormatter} />
       </DataTable>
       <Dialog
-        header="Añadir Factura"
+        header="Añadir Billo"
         visible={addDialog}
         width="500px"
         maximizable={true}

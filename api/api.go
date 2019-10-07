@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi"
 	_ "github.com/go-sql-driver/mysql"
@@ -318,11 +319,15 @@ func createFactura(w http.ResponseWriter, r *http.Request) {
 	//num_factura := keyVal["num_factura"]
 	id_cliente := keyVal["id_cliente"]
 	fecha := keyVal["fecha"]
-	_, err = stmt.Exec(id_cliente, fecha)
+	res, err := stmt.Exec(id_cliente, fecha)
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Fprintf(w, "New post was created")
+	id, err := res.LastInsertId()
+
+	idStr := strconv.FormatInt(id, 10)
+
+	fmt.Fprintf(w, `new post was created`+idStr)
 }
 
 func updateFactura(w http.ResponseWriter, r *http.Request) {
