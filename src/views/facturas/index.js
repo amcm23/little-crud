@@ -41,7 +41,7 @@ function Bills() {
 
   //Constante billos la cual guarda un array que contendrá todos los billos de la base de datos.
   const [bills, setBills] = useState([]);
-  const [addDialog, setAddDialog] = useState(true);
+  const [addDialog, setAddDialog] = useState(false);
   const [editDialog, setEditDialog] = useState(false);
   const [dataToEdit, setDataToEdit] = useState(null);
   const [selectedBill, setSelectedBill] = useState([]);
@@ -160,17 +160,17 @@ function Bills() {
       <Dialog
         header="Añadir Factura"
         visible={addDialog}
-        width="500px"
+        style={{ width: "80vw" }}
         maximizable={true}
         modal={true}
         onHide={() => setAddDialog(false)}>
-        <AddDialog hideDialog={hideAddDialog} />
+        <AddDialog hideDialog={hideAddDialog} fetchBills={fetchBills} />
       </Dialog>
 
       <Dialog
         header="Editar Bille"
         visible={editDialog}
-        width="500px"
+        width="1000px"
         maximizable={true}
         modal={true}
         onHide={() => setEditDialog(false)}>

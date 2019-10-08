@@ -8072,6 +8072,11 @@ react-error-overlay@^6.0.3:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.3.tgz#c378c4b0a21e88b2e159a3e62b2f531fd63bf60d"
   integrity sha512-bOUvMWFQVk5oz8Ded9Xb7WVdEi3QGLC8tH7HmYP0Fdp4Bn3qw0tRFmr5TW6mvahzvmrK4a6bqWGfCevBflP+Xw==
 
+react-hook-form@^3.23.18:
+  version "3.23.18"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.23.18.tgz#8f9b0c36828756960756daaf6095bf0e3f4f5667"
+  integrity sha512-Gfz1uy0bPh226tDy/AlqiKfbQT8c8HmiyYJrc8NYxrEWfhC/pId/AoLb7mnMEkIoJGq/UKoR8TCmwmcsBNO+zw==
+
 react-icons@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-3.7.0.tgz#64fe46231fabfeea27895edeae6c3b78114b8c8f"
@@ -9265,6 +9270,11 @@ svgo@^1.0.0, svgo@^1.2.2:
     stable "^0.1.8"
     unquote "~1.1.1"
     util.promisify "~1.0.0"
+
+sweetalert2@^8.18.1:
+  version "8.18.1"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-8.18.1.tgz#578ddedf2ededa59715562a7cc667a462a02fd97"
+  integrity sha512-Sjqj8sFwfL7Oa4TbMzYHgZJGEbmLGVXk2LZyjhMTVBjoxdTxVyYoaIw8zph3xVAX3fSYzueQ2xe89dxGX/E9hw==
 
 symbol-tree@^3.2.2:
   version "3.2.4"

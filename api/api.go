@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
+	"time"
 
 	"github.com/go-chi/chi"
 	_ "github.com/go-sql-driver/mysql"
@@ -110,6 +110,7 @@ func main() {
 	r.Delete("/facturas/{id:[0-9]+}", deleteFactura)
 	r.Post("/facturas", createFactura)
 	r.Put("/facturas/{id}", updateFactura)
+	//r.Post("/facturaDetalles/", postDetallesYFacturas)
 
 	r.Get("/detalles", getDetalles)
 	r.Get("/detalles/{id}", getDetalle)
@@ -161,6 +162,53 @@ func catch(err error) {
 		panic(err)
 	}
 }
+
+type estruc struct {
+	Id_cliente uint64    `json:"id_cliente"`
+	Fecha      time.Time `json:"fecha"`
+	Detalles   []Detalle `json:"detalles"`
+}
+
+/*func postDetallesYFacturas(w http.ResponseWriter, r *http.Request) {
+
+	var todo estruc
+
+	stmt, err := db.Prepare("INSERT INTO facturas(id_cliente,fecha) VALUES(?,?)")
+
+	if err != nil {
+		panic(err.Error())
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal)
+	idCliente := keyVal["id_cliente"]
+	detalles := keyVal["detalles"]
+
+	fmt.Fprintf(w, "Cliente with ID = %s was deleted", idCliente, detalles)
+
+	todo.Fecha = time.Now()
+	res, err := stmt.Exec(idCliente, todo.Fecha)
+	if err != nil {
+		panic(err.Error())
+	}
+	id, err := res.LastInsertId()
+
+	stmt, err = db.Prepare("INSERT INTO detalles(id_factura,id_producto,cantidad,precio, descuento, impuesto) VALUES(?,?,?,?,?,?)")
+
+	for _, detalle := range todo.Detalles {
+		_, err := stmt.Exec(id, detalle.Producto, detalle.Cantidad, detalle.Precio, detalle.Descuento, detalle.Impuesto)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	json.NewEncoder(w).Encode(todo)
+
+}*/
 
 func getClientes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -325,9 +373,7 @@ func createFactura(w http.ResponseWriter, r *http.Request) {
 	}
 	id, err := res.LastInsertId()
 
-	idStr := strconv.FormatInt(id, 10)
-
-	fmt.Fprintf(w, `new post was created`+idStr)
+	json.NewEncoder(w).Encode(id)
 }
 
 func updateFactura(w http.ResponseWriter, r *http.Request) {
