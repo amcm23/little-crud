@@ -89,9 +89,9 @@ export default function AddDialog(props) {
       ...detalles,
       {
         id_producto: currentProduct && currentProduct.id,
-        cantidad: currentCantidad && parseInt(currentCantidad, 10),
+        cantidad: currentCantidad && currentCantidad * 1,
         precio: currentProduct && currentProduct.precio,
-        descuento: currentDescuento && parseInt(currentDescuento, 10),
+        descuento: currentDescuento && currentDescuento * 1,
         impuesto: currentProduct && currentProduct.impuesto
       }
     ]);
@@ -137,7 +137,7 @@ export default function AddDialog(props) {
                 };
               })}
               onChange={e => handleIdCliente(e.target.value)}
-              placeholder="Selecciona un cliente"
+              placeholder="Selecciona un clientes"
             />
           </div>
         </div>
