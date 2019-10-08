@@ -8,6 +8,7 @@ import { baseUrl } from "../../constants/index";
 import { Dropdown } from "primereact/dropdown";
 import { ListBox } from "primereact/listbox";
 import { Dialog } from "primereact/dialog";
+import moment from "moment";
 
 export default function AddDialog(props) {
   useEffect(() => {
@@ -44,14 +45,14 @@ export default function AddDialog(props) {
 
   function submit() {
     const values = {
-      id_cliente: idCliente,
-      fecha: fecha,
+      id_cliente: idCliente.toString(),
+      fecha: moment(fecha).format("YYYY-MM-DD"),
       detalles: detalles
     };
 
     console.log("VALORES SUBMIT", values);
 
-    Axios.post(`${baseUrl}/bills`, values)
+    Axios.post(`${baseUrl}/facturas`, values)
       .then(response => {
         console.log(response.data);
         props.hideDialog();
@@ -88,9 +89,9 @@ export default function AddDialog(props) {
       ...detalles,
       {
         id_producto: currentProduct && currentProduct.id,
-        cantidad: currentCantidad && currentCantidad,
+        cantidad: currentCantidad && parseInt(currentCantidad, 10),
         precio: currentProduct && currentProduct.precio,
-        descuento: currentDescuento && currentDescuento,
+        descuento: currentDescuento && parseInt(currentDescuento, 10),
         impuesto: currentProduct && currentProduct.impuesto
       }
     ]);
