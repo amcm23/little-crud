@@ -7,7 +7,7 @@ import { Button } from "primereact/button";
 import { FaPlusCircle, FaTrash, FaPen, FaListAlt } from "react-icons/fa";
 import { Dialog } from "primereact/dialog";
 import AddDialog from "./addDialog";
-import EditDialog from "./editDialog";
+import DetailsDialog from "./detailsDialog";
 import { transformCategory } from "../../constants/options";
 
 function Bills() {
@@ -39,12 +39,20 @@ function Bills() {
       });
   }
 
+  function handleDetails(id) {
+    setCurrentBillID(id);
+    console.log("LA IDDDDD: ", id);
+    setDetailsDialog(true);
+  }
+
   //Constante billos la cual guarda un array que contendrá todos los billos de la base de datos.
   const [bills, setBills] = useState([]);
   const [addDialog, setAddDialog] = useState(false);
   const [editDialog, setEditDialog] = useState(false);
   const [dataToEdit, setDataToEdit] = useState(null);
   const [selectedBill, setSelectedBill] = useState([]);
+  const [detailsDialog, setDetailsDialog] = useState(false);
+  const [currentBillID, setCurrentBillID] = useState();
 
   function showAddDialog() {
     setAddDialog(true);
@@ -62,16 +70,6 @@ function Bills() {
     fetchBills();
   }
 
-  function showEdit(bill) {
-    console.log(bill);
-    setDataToEdit(bill);
-  }
-
-  function hideEditDialog() {
-    setEditDialog(false);
-    fetchBills();
-  }
-
   function optionsFormatter(rowData, column) {
     //este formateador lo que hace es pintar botones en vez de datos
     //en la tupla de cada billo y trae en rowData el objeto billo
@@ -83,13 +81,7 @@ function Bills() {
           tooltipOptions={{ position: "top" }}
           type="button"
           label={<FaListAlt />}
-          onClick={() => showEdit(rowData)}
-        />
-        <Button
-          style={{ margin: "0.5rem" }}
-          type="button"
-          label={<FaPen />}
-          onClick={() => showEdit(rowData)}
+          onClick={() => handleDetails(rowData.id)}
         />
         <Button
           style={{ margin: "0.5rem" }}
@@ -166,15 +158,18 @@ function Bills() {
         onHide={() => setAddDialog(false)}>
         <AddDialog hideDialog={hideAddDialog} fetchBills={fetchBills} />
       </Dialog>
-
       <Dialog
-        header="Editar Bille"
-        visible={editDialog}
-        width="1000px"
+        header="Detalles"
+        visible={detailsDialog}
+        style={{ width: "80vw" }}
         maximizable={true}
         modal={true}
-        onHide={() => setEditDialog(false)}>
-        <EditDialog hideDialog={hideEditDialog} data={dataToEdit} />
+        onHide={() => setDetailsDialog(false)}>
+        <DetailsDialog
+          idFactura={currentBillID}
+          hideDialog={hideAddDialog}
+          fetchBills={fetchBills}
+        />
       </Dialog>
     </div>
   );

@@ -118,8 +118,8 @@ func main() {
 	r.Post("/facturas", createFactura)
 	r.Put("/facturas/{id}", updateFactura)
 
-	r.Get("/detalles", getDetalles)
-	r.Get("/detalles/{id}", getDetalle)
+	r.Get("/detalles/{id}", getDetalles)
+	r.Get("/detalle/{id}", getDetalle)
 	r.Delete("/detalles/{id}", deleteDetalle)
 	r.Post("/detalles", createDetalle)
 	r.Put("/detalles/{id}", updateDetalle)
@@ -436,12 +436,13 @@ func getDetalles(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
+	id := chi.URLParam(r, "id")
 	var detalles []Detalle
-	result, err := db.Query("SELECT * from detalles")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer result.Close()
+	query, err := db.Prepare("SELECT * from detalles WHERE id_factura=?")
+	catch(err)
+	result, er := query.Query(id)
+	catch(er)
+	query.Close()
 	for result.Next() {
 		var detalle Detalle
 		err := result.Scan(&detalle.ID, &detalle.Factura, &detalle.Producto, &detalle.Cantidad, &detalle.Precio, &detalle.Descuento, &detalle.Impuesto)

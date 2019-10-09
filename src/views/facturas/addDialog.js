@@ -42,6 +42,8 @@ export default function AddDialog(props) {
   const [currentCantidad, setCurrentCantidad] = useState();
   const [dialogCantidad, setDialogCantidad] = useState(0);
   const [currentDescuento, setCurrentDescuento] = useState(0);
+  const [precioFinal, setPrecioFinal] = useState(0);
+  const [iva, setIva] = useState(0);
 
   function submit() {
     const values = {
@@ -92,9 +94,27 @@ export default function AddDialog(props) {
         cantidad: currentCantidad && currentCantidad * 1,
         precio: currentProduct && currentProduct.precio,
         descuento: currentDescuento && currentDescuento * 1,
-        impuesto: currentProduct && currentProduct.impuesto
+        impuesto: iva && iva * 1
       }
     ]);
+    console.log(
+      iva,
+      iva / 100,
+      (iva * 1) / 100,
+      currentCantidad,
+      currentProduct.precio,
+      currentDescuento,
+      currentProduct.impuesto
+    );
+    setPrecioFinal(
+      prevState =>
+        prevState +
+        (currentProduct.precio -
+          currentProduct.precio * (currentDescuento / 100) +
+          (currentProduct.precio -
+            currentProduct.precio * (currentDescuento / 100)) *
+            (iva / 100))
+    );
     setDialogCantidad(false);
   }
 
@@ -120,6 +140,10 @@ export default function AddDialog(props) {
   function handleIdCliente(id) {
     console.log("FUCK ID CLIENTE: ", id);
     setIdCliente(id);
+  }
+
+  function handleChangeIVA(iva) {
+    setIva(iva);
   }
 
   return (
@@ -198,6 +222,12 @@ export default function AddDialog(props) {
               />
             </div>
             <div style={{ margin: "0.5rem" }}>
+              <InputText
+                placeholder="IVA (%)"
+                onChange={e => handleChangeIVA(e.target.value)}
+              />
+            </div>
+            <div style={{ margin: "0.5rem" }}>
               <Button label={"Ok"} onClick={handleOk}></Button>
             </div>
           </div>
@@ -213,6 +243,10 @@ export default function AddDialog(props) {
               </div>
             );
           })}
+        </div>
+        <div>
+          <hr></hr>
+          <h1>Precio Total: {precioFinal.toFixed(2)}€</h1>
         </div>
         <div className="p-col-12 p-md-4" style={{ marginBottom: "1rem" }}>
           <div className="p-inputgroup">
