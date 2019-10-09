@@ -7,7 +7,7 @@ import Axios from "axios";
 import { baseUrl } from "../../constants/index";
 import { categories } from "../../constants/options";
 import { Dropdown } from "primereact/dropdown";
-import moment from "moment";
+import Swal from "sweetalert2";
 
 export default function EditDialog(props) {
   const { data } = props;
@@ -48,6 +48,13 @@ export default function EditDialog(props) {
         setPrice("");
         setCategory("");
         setStock("");
+        Swal.fire({
+          title: "Editado",
+          text: "Producto editado con éxito.",
+          timer: 1000,
+          type: "success",
+          showConfirmButton: false
+        });
       })
       .catch(error => {
         console.log(error);

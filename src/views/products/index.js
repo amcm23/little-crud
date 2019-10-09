@@ -9,6 +9,7 @@ import { Dialog } from "primereact/dialog";
 import AddDialog from "./addDialog";
 import EditDialog from "./editDialog";
 import { transformCategory } from "../../constants/options";
+import Swal from "sweetalert2";
 
 function Products() {
   function fetchProducts() {
@@ -31,7 +32,13 @@ function Products() {
       .delete(`${baseUrl}/productos/${id}`)
       .then(response => {
         console.log(response.data);
-        alert("eliminado con éxito");
+        Swal.fire({
+          title: "Eliminado",
+          text: "Producto eliminado con éxito.",
+          timer: 1000,
+          type: "success",
+          showConfirmButton: false
+        });
         fetchProducts();
       })
       .catch(error => {
@@ -169,7 +176,7 @@ function Products() {
         maximizable={true}
         modal={true}
         onHide={() => setAddDialog(false)}>
-        <AddDialog hideDialog={hideAddDialog} />
+        <AddDialog hideDialog={hideAddDialog} fetchProductos={fetchProducts} />
       </Dialog>
 
       <Dialog

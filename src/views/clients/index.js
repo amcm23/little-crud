@@ -8,6 +8,7 @@ import { FaPlusCircle, FaTrash, FaPen } from "react-icons/fa";
 import { Dialog } from "primereact/dialog";
 import AddDialog from "./addDialog";
 import EditDialog from "./editDialog";
+import Swal from "sweetalert2";
 
 function Clients() {
   function fetchClients() {
@@ -30,7 +31,13 @@ function Clients() {
       .delete(`${baseUrl}/clientes/${id}`)
       .then(response => {
         console.log(response.data);
-        alert("eliminado con éxito");
+        Swal.fire({
+          title: "Eliminado",
+          text: "Cliente eliminado con éxito.",
+          timer: 1000,
+          type: "success",
+          showConfirmButton: false
+        });
         fetchClients();
       })
       .catch(error => {
@@ -182,7 +189,7 @@ function Clients() {
         maximizable={true}
         modal={true}
         onHide={() => setAddDialog(false)}>
-        <AddDialog hideDialog={hideAddDialog} />
+        <AddDialog hideDialog={hideAddDialog} fetchClientes={fetchClients} />
       </Dialog>
 
       <Dialog

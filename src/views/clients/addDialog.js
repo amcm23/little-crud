@@ -31,9 +31,15 @@ export default function AddDialog(props) {
 
     Axios.post(`${baseUrl}/clientes`, values)
       .then(response => {
-        props.hideDialog();
-        alert("hecho");
         console.log("DONETE");
+        setDni("");
+        setName("");
+        setSurname("");
+        setAddress("");
+        setBirthDate("");
+        setTlf("");
+        setEmail("");
+        props.fetchClientes();
       })
       .catch(error => {
         console.log(error);

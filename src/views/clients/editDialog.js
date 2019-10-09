@@ -6,6 +6,7 @@ import { es } from "../../constants/spanish";
 import Axios from "axios";
 import { baseUrl } from "../../constants/index";
 import moment from "moment";
+import Swal from "sweetalert2";
 
 export default function EditDialog(props) {
   const { data } = props;
@@ -50,7 +51,7 @@ export default function EditDialog(props) {
       .then(response => {
         console.log(response.data);
         props.hideDialog();
-        setId();
+        setId("");
         setName("");
         setSurname("");
         setDni("");
@@ -58,6 +59,13 @@ export default function EditDialog(props) {
         setBirthDate("");
         setTlf("");
         setEmail("");
+        Swal.fire({
+          title: "Editado",
+          text: "Cliente editado con éxito.",
+          timer: 1000,
+          type: "success",
+          showConfirmButton: false
+        });
       })
       .catch(error => {
         console.log(error);

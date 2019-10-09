@@ -152,7 +152,7 @@ function Bills() {
       <Dialog
         header="Añadir Factura"
         visible={addDialog}
-        style={{ width: "80vw" }}
+        style={{ width: "70vw" }}
         maximizable={true}
         modal={true}
         onHide={() => setAddDialog(false)}>

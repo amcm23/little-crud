@@ -29,9 +29,10 @@ export default function AddDialog(props) {
       .then(response => {
         console.log(response.data);
         setName("");
-        setPrice();
-        setStock();
-        setCategory();
+        setPrice("");
+        setStock("");
+        setCategory("");
+        props.fetchProductos();
       })
       .catch(error => {
         console.log(error);

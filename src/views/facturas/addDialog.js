@@ -44,6 +44,7 @@ export default function AddDialog(props) {
   const [currentDescuento, setCurrentDescuento] = useState(0);
   const [precioFinal, setPrecioFinal] = useState(0);
   const [iva, setIva] = useState(0);
+  var inputo;
 
   function submit() {
     const values = {
@@ -82,6 +83,7 @@ export default function AddDialog(props) {
   function handleAddProduct(p) {
     console.log("CURRENT CANTIDAD: ", currentCantidad);
     setCurrentProduct(p);
+    console.log("CURRENT PRODUCTO ", currentProduct, p);
     setDialogCantidad(true);
   }
 
@@ -101,7 +103,7 @@ export default function AddDialog(props) {
       }
     ]);
     console.log(
-      iva,
+      iva && iva,
       iva / 100,
       (iva * 1) / 100,
       currentCantidad,
@@ -116,7 +118,8 @@ export default function AddDialog(props) {
           currentProduct.precio * (currentDescuento / 100) +
           (currentProduct.precio -
             currentProduct.precio * (currentDescuento / 100)) *
-            (iva / 100))
+            (iva / 100)) *
+          currentCantidad
     );
     setDialogCantidad(false);
   }
@@ -216,6 +219,10 @@ export default function AddDialog(props) {
               <InputText
                 placeholder="cantidad"
                 onChange={e => handleChangeCantidad(e.target.value)}
+                autoFocus
+                ref={input => {
+                  inputo = input;
+                }}
               />
             </div>
             <div style={{ margin: "0.5rem" }}>
