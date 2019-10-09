@@ -31,10 +31,11 @@ export default function DetailsDialog(props) {
     //en la tupla de cada billo y trae en rowData el objeto billo
     return (
       <div>
-        {rowData.precio -
+        {(rowData.precio -
           rowData.precio * (rowData.descuento / 100) +
           (rowData.precio - rowData.precio * (rowData.descuento / 100)) *
-            (rowData.impuesto / 100)}
+            (rowData.impuesto / 100)) *
+          rowData.cantidad}
         €
       </div>
     );
@@ -116,10 +117,11 @@ export default function DetailsDialog(props) {
           detalles.map(function(detalle, i) {
             value =
               value +
-              detalle.precio -
-              detalle.precio * (detalle.descuento / 100) +
-              (detalle.precio - detalle.precio * (detalle.descuento / 100)) *
-                (detalle.impuesto / 100);
+              (detalle.precio -
+                detalle.precio * (detalle.descuento / 100) +
+                (detalle.precio - detalle.precio * (detalle.descuento / 100)) *
+                  (detalle.impuesto / 100)) *
+                detalle.cantidad;
           })}
         <h3>Precio Total: {value} €</h3>
       </div>

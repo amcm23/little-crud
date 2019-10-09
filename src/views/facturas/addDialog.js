@@ -102,7 +102,7 @@ export default function AddDialog(props) {
         impuesto: iva && iva * 1
       }
     ]);
-    console.log(
+    /*console.log(
       iva && iva,
       iva / 100,
       (iva * 1) / 100,
@@ -110,7 +110,7 @@ export default function AddDialog(props) {
       currentProduct.precio,
       currentDescuento,
       currentProduct.impuesto
-    );
+    );*/
     setPrecioFinal(
       prevState =>
         prevState +
