@@ -57,8 +57,11 @@ export default function AddDialog(props) {
     Axios.post(`${baseUrl}/facturas`, values)
       .then(response => {
         console.log(response.data);
-        props.hideDialog();
         props.fetchBills();
+        setFecha();
+        setIdCliente();
+        setDetalles([]);
+        setPrecioFinal(0);
       })
       .catch(error => {
         console.log(error);
@@ -239,7 +242,14 @@ export default function AddDialog(props) {
             return (
               <div>
                 ID producto: {detalle.id_producto} | Descuento:{" "}
-                {detalle.descuento}% | Cantidad: {detalle.cantidad} uds.
+                {detalle.descuento}% | IVA: {detalle.impuesto}% | Cantidad:{" "}
+                {detalle.cantidad} uds. | Subtotal:{" "}
+                {detalle.precio -
+                  detalle.precio * (detalle.descuento / 100) +
+                  (detalle.precio -
+                    detalle.precio * (detalle.descuento / 100)) *
+                    (detalle.impuesto / 100)}{" "}
+                €
               </div>
             );
           })}

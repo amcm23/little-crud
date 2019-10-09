@@ -7,6 +7,8 @@ import { Column } from "primereact/column";
 export default function DetailsDialog(props) {
   const [detalles, setDetalles] = useState([]);
   const { data, idFactura } = props;
+  const [totalPrice, setTotalPrice] = useState(0);
+  var value = 0;
 
   useEffect(() => {
     fetchDetails();
@@ -22,6 +24,25 @@ export default function DetailsDialog(props) {
       .catch(error => {
         console.log(error);
       });
+  }
+
+  function optionsFormatter(rowData, column) {
+    //este formateador lo que hace es pintar botones en vez de datos
+    //en la tupla de cada billo y trae en rowData el objeto billo
+    return (
+      <div>
+        {rowData.precio -
+          rowData.precio * (rowData.descuento / 100) +
+          (rowData.precio - rowData.precio * (rowData.descuento / 100)) *
+            (rowData.impuesto / 100)}
+        €
+      </div>
+    );
+  }
+
+  function handleTotalPrice(price) {
+    let myPrice = totalPrice + price;
+    setTotalPrice(myPrice);
   }
 
   return (
@@ -80,8 +101,28 @@ export default function DetailsDialog(props) {
           style={{ overflowX: "auto" }}
           sortable={true}
         />
+        <Column
+          field="subtotal"
+          header="Subtotal"
+          filter={true}
+          style={{ overflowX: "auto" }}
+          sortable={true}
+          body={optionsFormatter}
+        />
         {/*<Column field="options" header="Opciones" body={optionsFormatter} />*/}
       </DataTable>
+      <div>
+        {detalles &&
+          detalles.map(function(detalle, i) {
+            value =
+              value +
+              detalle.precio -
+              detalle.precio * (detalle.descuento / 100) +
+              (detalle.precio - detalle.precio * (detalle.descuento / 100)) *
+                (detalle.impuesto / 100);
+          })}
+        <h3>Precio Total: {value} €</h3>
+      </div>
     </div>
   );
 }

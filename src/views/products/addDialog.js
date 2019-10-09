@@ -28,7 +28,6 @@ export default function AddDialog(props) {
     Axios.post(`${baseUrl}/productos`, values)
       .then(response => {
         console.log(response.data);
-        props.hideDialog();
         setName("");
         setPrice();
         setStock();
