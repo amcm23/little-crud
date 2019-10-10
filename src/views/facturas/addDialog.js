@@ -251,11 +251,12 @@ export default function AddDialog(props) {
                 ID producto: {detalle.id_producto} | Descuento:{" "}
                 {detalle.descuento}% | IVA: {detalle.impuesto}% | Cantidad:{" "}
                 {detalle.cantidad} uds. | Subtotal:{" "}
-                {detalle.precio -
+                {(detalle.precio -
                   detalle.precio * (detalle.descuento / 100) +
                   (detalle.precio -
                     detalle.precio * (detalle.descuento / 100)) *
-                    (detalle.impuesto / 100)}{" "}
+                    (detalle.impuesto / 100)) *
+                  detalle.cantidad}{" "}
                 €
               </div>
             );

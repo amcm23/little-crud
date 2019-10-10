@@ -123,11 +123,6 @@ function Products() {
       <DataTable
         responsive={true}
         value={clients}
-        //selectionMode="multiple"
-        //selection={selectedProduct}
-        //onSelectionChange={e =>
-        //  setSelectedProduct(selectedProduct.concat(e.value))
-        //}
         responsive={true}
         resizableColumns={true}
         columnResizeMode="fit">
