@@ -28,22 +28,30 @@ function Products() {
   }, []);
 
   function handleDelete(id) {
-    axios
-      .delete(`${baseUrl}/productos/${id}`)
-      .then(response => {
-        console.log(response.data);
-        Swal.fire({
-          title: "Eliminado",
-          text: "Producto eliminado con éxito.",
-          timer: 1000,
-          type: "success",
-          showConfirmButton: false
-        });
-        fetchProducts();
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    Swal.fire({
+      title: "Confirmar Eliminación.",
+      showConfirmButton: true,
+      showCancelButton: true
+    }).then(result => {
+      if (result.value) {
+        axios
+          .delete(`${baseUrl}/productos/${id}`)
+          .then(response => {
+            console.log(response.data);
+            Swal.fire({
+              title: "Eliminado",
+              text: "Producto eliminado con éxito.",
+              timer: 1000,
+              type: "success",
+              showConfirmButton: false
+            });
+            fetchProducts();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    });
   }
 
   //Constante productos la cual guarda un array que contendrá todos los productos de la base de datos.
@@ -87,6 +95,7 @@ function Products() {
         <Button
           type="button"
           label={<FaPen />}
+          style={{ marginRight: "0.5rem" }}
           onClick={() => showEdit(rowData)}
         />
         <Button
@@ -165,6 +174,7 @@ function Products() {
         <Column field="options" header="Opciones" body={optionsFormatter} />
       </DataTable>
       <Dialog
+        contentStyle={{ maxHeight: "800px", overflow: "auto" }}
         header="Añadir Producto"
         visible={addDialog}
         width="500px"
@@ -175,7 +185,8 @@ function Products() {
       </Dialog>
 
       <Dialog
-        header="Editar Producte"
+        contentStyle={{ maxHeight: "800px", overflow: "auto" }}
+        header="Editar Producto"
         visible={editDialog}
         width="500px"
         maximizable={true}

@@ -4,11 +4,19 @@ import { Column } from "primereact/column";
 import axios from "axios";
 import { baseUrl } from "../../constants/index";
 import { Button } from "primereact/button";
-import { FaPlusCircle, FaTrash, FaPen, FaListAlt } from "react-icons/fa";
+import {
+  FaPlusCircle,
+  FaTrash,
+  FaPen,
+  FaListAlt,
+  FaDownload
+} from "react-icons/fa";
 import { Dialog } from "primereact/dialog";
 import AddDialog from "./addDialog";
 import DetailsDialog from "./detailsDialog";
+import BillPdf from "./billPdf";
 import { transformCategory } from "../../constants/options";
+import Swal from "sweetalert2";
 
 function Bills() {
   function fetchBills() {
@@ -27,22 +35,36 @@ function Bills() {
   }, []);
 
   function handleDelete(id) {
-    axios
-      .delete(`${baseUrl}/facturas/${id}`)
-      .then(response => {
-        console.log(response.data);
-        alert("eliminado con éxito");
-        fetchBills();
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    Swal.fire({
+      title: "Confirmar Eliminación.",
+      showConfirmButton: true,
+      showCancelButton: true
+    }).then(result => {
+      if (result.value) {
+        axios
+          .delete(`${baseUrl}/facturas/${id}`)
+          .then(response => {
+            console.log(response.data);
+            alert("eliminado con éxito");
+            fetchBills();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    });
   }
 
   function handleDetails(id) {
     setCurrentBillID(id);
     console.log("LA IDDDDD: ", id);
     setDetailsDialog(true);
+  }
+
+  function handleDownload(bill) {
+    setCurrentBill(bill);
+    console.log("currentBill: ", bill);
+    setBillPdf(true);
   }
 
   //Constante billos la cual guarda un array que contendrá todos los billos de la base de datos.
@@ -53,6 +75,8 @@ function Bills() {
   const [selectedBill, setSelectedBill] = useState([]);
   const [detailsDialog, setDetailsDialog] = useState(false);
   const [currentBillID, setCurrentBillID] = useState();
+  const [billPdf, setBillPdf] = useState(false);
+  const [currentBill, setCurrentBill] = useState({});
 
   function showAddDialog() {
     setAddDialog(true);
@@ -89,6 +113,10 @@ function Bills() {
           className="p-button-danger"
           label={<FaTrash />}
           onClick={() => handleDelete(rowData.id)}
+        />
+        <Button
+          label={<FaDownload />}
+          onClick={() => handleDownload(rowData)}
         />
       </div>
     );
@@ -151,6 +179,7 @@ function Bills() {
       </DataTable>
       <Dialog
         header="Añadir Factura"
+        contentStyle={{ maxHeight: "800px", overflow: "auto" }}
         visible={addDialog}
         style={{ width: "70vw" }}
         maximizable={true}
@@ -159,6 +188,7 @@ function Bills() {
         <AddDialog hideDialog={hideAddDialog} fetchBills={fetchBills} />
       </Dialog>
       <Dialog
+        contentStyle={{ maxHeight: "800px", overflow: "auto" }}
         header="Detalles"
         visible={detailsDialog}
         style={{ width: "80vw" }}
@@ -167,6 +197,21 @@ function Bills() {
         onHide={() => setDetailsDialog(false)}>
         <DetailsDialog
           idFactura={currentBillID}
+          hideDialog={hideAddDialog}
+          fetchBills={fetchBills}
+        />
+      </Dialog>
+      <Dialog
+        contentStyle={{ maxHeight: "800px", overflow: "auto" }}
+        header="Descargar Factura"
+        visible={billPdf}
+        style={{ width: "80vw" }}
+        maximizable={true}
+        resizable={true}
+        modal={true}
+        onHide={() => setBillPdf(false)}>
+        <BillPdf
+          factura={currentBill}
           hideDialog={hideAddDialog}
           fetchBills={fetchBills}
         />

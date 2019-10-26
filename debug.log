@@ -1,0 +1,2 @@
+[1010/095702.456:ERROR:process_reader_win.cc(151)] SuspendThread: Acceso denegado. (0x5)
+[1010/095702.463:ERROR:exception_snapshot_win.cc(98)] thread ID 15504 not found in process

@@ -59,13 +59,6 @@ export default function EditDialog(props) {
         setBirthDate("");
         setTlf("");
         setEmail("");
-        Swal.fire({
-          title: "Editado",
-          text: "Cliente editado con éxito.",
-          timer: 1000,
-          type: "success",
-          showConfirmButton: false
-        });
       })
       .catch(error => {
         console.log(error);

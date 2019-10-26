@@ -27,22 +27,30 @@ function Clients() {
   }, []);
 
   function handleDelete(id) {
-    axios
-      .delete(`${baseUrl}/clientes/${id}`)
-      .then(response => {
-        console.log(response.data);
-        Swal.fire({
-          title: "Eliminado",
-          text: "Cliente eliminado con éxito.",
-          timer: 1000,
-          type: "success",
-          showConfirmButton: false
-        });
-        fetchClients();
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    Swal.fire({
+      title: "Confirmar Eliminación.",
+      showConfirmButton: true,
+      showCancelButton: true
+    }).then(result => {
+      if (result.value) {
+        axios
+          .delete(`${baseUrl}/clientes/${id}`)
+          .then(response => {
+            console.log(response.data);
+            Swal.fire({
+              title: "Eliminado",
+              text: "Cliente eliminado con éxito.",
+              timer: 1000,
+              type: "success",
+              showConfirmButton: false
+            });
+            fetchClients();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    });
   }
 
   //Constante clientes la cual guarda un array que contendrá todos los clientes de la base de datos.
@@ -87,6 +95,7 @@ function Clients() {
           type="button"
           label={<FaPen />}
           onClick={() => showEdit(rowData)}
+          style={{ marginRight: "0.5rem" }}
         />
         <Button
           type="button"
@@ -183,6 +192,7 @@ function Clients() {
         <Column field="options" header="Opciones" body={optionsFormatter} />
       </DataTable>
       <Dialog
+        contentStyle={{ maxHeight: "800px", overflow: "auto" }}
         header="Añadir Cliente"
         visible={addDialog}
         width="500px"
@@ -193,6 +203,7 @@ function Clients() {
       </Dialog>
 
       <Dialog
+        contentStyle={{ maxHeight: "800px", overflow: "auto" }}
         header="Editar Cliente"
         visible={editDialog}
         width="500px"

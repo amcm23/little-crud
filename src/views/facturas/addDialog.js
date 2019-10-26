@@ -191,7 +191,7 @@ export default function AddDialog(props) {
               filter={true}
               options={productos.map(function(producto, i) {
                 return {
-                  label: `${producto.id} | ${producto.nombre} | ${producto.precio}`,
+                  label: `ID: ${producto.id} | ${producto.nombre} | ${producto.precio}€`,
                   value: {
                     id: producto.id,
                     precio: producto.precio,
@@ -208,11 +208,12 @@ export default function AddDialog(props) {
         </div>
 
         <Dialog
+          contentStyle={{ maxHeight: "800px", overflow: "auto" }}
           header="Cantidad"
           visible={dialogCantidad}
           //style={{ width: "80vw" }}
           modal={false}
-          closable={false}
+          closable={true}
           onHide={() => setDialogCantidad(false)}>
           <div>
             <div style={{ margin: "0.5rem" }}>

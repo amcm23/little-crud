@@ -48,13 +48,6 @@ export default function EditDialog(props) {
         setPrice("");
         setCategory("");
         setStock("");
-        Swal.fire({
-          title: "Editado",
-          text: "Producto editado con éxito.",
-          timer: 1000,
-          type: "success",
-          showConfirmButton: false
-        });
       })
       .catch(error => {
         console.log(error);
